@@ -1,4 +1,4 @@
-import { saveRaw, saveParsed, Option } from "./util/cacheData";
+import { saveRaw, saveParsed, Option } from "./data_gen_scripts/cacheData";
 
 const latest = "20219"; // Update this to whatever latest term
 const codes = ["CSC", "MAT", "STA"]; // Update for more courses
