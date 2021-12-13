@@ -54,11 +54,11 @@ export interface CourseRawData {
  */
 const getRawData = async (
   searchCode: string,
-  searchSession: string
+  searchSession: string,
 ): Promise<CourseRawData> => {
   const rawCourses = (
     await axios.get<CourseRawData | []>(
-      `https://timetable.iit.artsci.utoronto.ca/api/${searchSession}/courses?code=${searchCode}`
+      `https://timetable.iit.artsci.utoronto.ca/api/${searchSession}/courses?code=${searchCode}`,
     )
   ).data;
   if (Array.isArray(rawCourses)) return {};

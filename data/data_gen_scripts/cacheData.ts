@@ -21,7 +21,7 @@ export const saveRaw = async (option: Option): Promise<CourseRawData> => {
 };
 export const saveParsed = async (
   data: CourseRawData,
-  option: Option
+  option: Option,
 ): Promise<Course[]> => {
   const { code, latest } = option;
   const fileName = `${code}-${latest}-parsed.json`;

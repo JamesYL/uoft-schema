@@ -84,11 +84,10 @@ const parseRawData = async (rawCourses: CourseRawData): Promise<Course[]> => {
           meeting.schedule as ScheduleRawData
         )[scheduleId];
         if (
-          meetingDay !== null &&
-          meetingStartTime !== null &&
-          meetingEndTime !== null
-        )
-          schedule.push({ meetingDay, meetingStartTime, meetingEndTime });
+          meetingDay !== null
+          && meetingStartTime !== null
+          && meetingEndTime !== null
+        ) schedule.push({ meetingDay, meetingStartTime, meetingEndTime });
       });
       meetings.push({
         schedule,

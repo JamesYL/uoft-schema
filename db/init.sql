@@ -4,31 +4,26 @@ CREATE DATABASE uoft;
 CREATE TABLE department (
     code CHAR(3) PRIMARY KEY,
     full_name VARCHAR(150) NOT NULL,
-    info VARCHAR(1000) NOT NULL
+    info VARCHAR(1000)
 );
 CREATE TABLE breadth_category (
-    breadth_id SMALLINT PRIMARY KEY CHECK (breadth_id > 0),
+    id SMALLINT PRIMARY KEY CHECK (id > 0),
     category VARCHAR(150) NOT NULL,
     explanation VARCHAR(1000) NOT NULL
 );
-CREATE TABLE distribution_category (
-    distribution_id SMALLINT PRIMARY KEY CHECK (distribution_id > 0),
-    title VARCHAR(100) NOT NULL,
-    explanation VARCHAR(1000) NOT NULL
-);
+
 CREATE TABLE course (
     id INT PRIMARY KEY CHECK (id >= 0),
     department CHAR(3) NOT NULL,
     course_title VARCHAR(150) NOT NULL,
     course_number SMALLINT NOT NULL CHECK (course_number >= 100),
     campus SMALLINT NOT NULL CHECK (campus IN (0, 1, 2)),
-    breadth_category SMALLINT NOT NULL,
-    distribution_category SMALLINT NOT NULL,
+    breadth_category SMALLINT,
+    distribution_category VARCHAR(14) CHECK (distribution_category in ('Science', 'Social Science', 'Humanities')),
     course_description VARCHAR(1000) NOT NULL,
     num_credits SMALLINT NOT NULL CHECK (num_credits IN (1, 2)),
     CONSTRAINT department FOREIGN KEY(department) REFERENCES department(code),
-    CONSTRAINT distribution_category FOREIGN KEY(distribution_category) REFERENCES distribution_category(distribution_id),
-    CONSTRAINT breadth FOREIGN KEY(breadth_category) REFERENCES breadth_category(breadth_id),
+    CONSTRAINT breadth FOREIGN KEY(breadth_category) REFERENCES breadth_category(id),
     CONSTRAINT unique_course UNIQUE (department, course_number, campus)
 );
 CREATE TABLE selection (
@@ -57,15 +52,15 @@ CREATE TABLE meeting (
     CONSTRAINT selection_id FOREIGN KEY(selection_id) REFERENCES selection(id),
     CONSTRAINT unique_meeting UNIQUE (selection_id, meeting_type, section_number)
 );
-CREATE TABLE instructor (
+CREATE TABLE meeting_taught_by (
     meeting_id INT,
-    user_id INT,
-    PRIMARY KEY (meeting_id, user_id),
-    CONSTRAINT user_id FOREIGN KEY(user_id) REFERENCES instructor(id),
+    instructor_id INT,
+    PRIMARY KEY (meeting_id, instructor_id),
+    CONSTRAINT instructor_id FOREIGN KEY(instructor_id) REFERENCES instructor(id),
     CONSTRAINT meeting_id FOREIGN KEY(meeting_id) REFERENCES meeting(id)
 );
 CREATE TABLE course_relation_tree_edge (
-    edge_id INT PRIMARY KEY,
+    id INT PRIMARY KEY,
     messsage VARCHAR(50) NOT NULL
 );
 CREATE TABLE course_relation_tree (
@@ -76,29 +71,29 @@ CREATE TABLE course_relation_tree (
     course_id INT,
     edge_id INT,
     CONSTRAINT course_id FOREIGN KEY(course_id) REFERENCES course(id),
-    CONSTRAINT edge_id FOREIGN KEY(edge_id) REFERENCES course_relation_tree_edge(edge_id)
+    CONSTRAINT edge_id FOREIGN KEY(edge_id) REFERENCES course_relation_tree_edge(id)
 );
 CREATE TABLE prerequisite (
-    course_id INT PRIMARY KEY,
+    id INT PRIMARY KEY,
     prereq INT NOT NULL,
     CONSTRAINT prereq FOREIGN KEY(prereq) REFERENCES course_relation_tree(id),
-    CONSTRAINT course_id FOREIGN KEY(course_id) REFERENCES course(id)
+    CONSTRAINT id FOREIGN KEY(id) REFERENCES course(id)
 );
 CREATE TABLE exclusion (
-    course_id INT PRIMARY KEY,
+    id INT PRIMARY KEY,
     exclusion INT NOT NULL,
     CONSTRAINT exclusion FOREIGN KEY(exclusion) REFERENCES course_relation_tree(id),
-    CONSTRAINT course_id FOREIGN KEY(course_id) REFERENCES course(id)
+    CONSTRAINT id FOREIGN KEY(id) REFERENCES course(id)
 );
 CREATE TABLE corequisite (
-    course_id INT PRIMARY KEY,
+    id INT PRIMARY KEY,
     coreq INT NOT NULL,
     CONSTRAINT coreq FOREIGN KEY(coreq) REFERENCES course_relation_tree(id),
-    CONSTRAINT course_id FOREIGN KEY(course_id) REFERENCES course(id)
+    CONSTRAINT id FOREIGN KEY(id) REFERENCES course(id)
 );
 CREATE TABLE recommended_prep (
-    course_id INT PRIMARY KEY,
+    id INT PRIMARY KEY,
     prep INT NOT NULL,
     CONSTRAINT prep FOREIGN KEY(prep) REFERENCES course_relation_tree(id),
-    CONSTRAINT course_id FOREIGN KEY(course_id) REFERENCES course(id)
+    CONSTRAINT id FOREIGN KEY(id) REFERENCES course(id)
 );
