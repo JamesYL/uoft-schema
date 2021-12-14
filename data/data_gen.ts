@@ -18,6 +18,6 @@ const generate = async ({
         return saveRaw(option).then((data) => saveParsed(data, option));
       })
     );
-  if (updateCourses) coursesToCsv();
+  if (updateCourses) await coursesToCsv();
 };
 generate({ fetchUpdatedData: false, updateCourses: true });

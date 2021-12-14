@@ -99,6 +99,7 @@ const coursesToCsv = async () => {
     })
     .map<Record>((item, i) => ({ ...item, id: i }));
 
-  saveToCsv<Record>("course.csv", headers, coursesForCSV);
+  await saveToCsv<Record>("course.csv", headers, coursesForCSV);
+  console.log("Successfully saved courses to CSV");
 };
 export default coursesToCsv;
