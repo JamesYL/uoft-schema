@@ -1,3 +1,5 @@
+\c postgres;
+DROP DATABASE IF EXISTS uoft;
 CREATE DATABASE uoft;
 \c uoft;
 
@@ -17,14 +19,14 @@ CREATE TABLE course (
     department CHAR(3) NOT NULL,
     course_title VARCHAR(150) NOT NULL,
     course_number SMALLINT NOT NULL CHECK (course_number >= 100),
-    campus SMALLINT NOT NULL CHECK (campus IN (0, 1, 2)),
+    campus SMALLINT NOT NULL CHECK (campus IN (1, 3, 5)),
     breadth_category SMALLINT,
     distribution_category VARCHAR(14) CHECK (distribution_category in ('Science', 'Social Science', 'Humanities')),
-    course_description VARCHAR(1000) NOT NULL,
-    num_credits SMALLINT NOT NULL CHECK (num_credits IN (1, 2)),
+    course_description VARCHAR(2500) NOT NULL,
+    num_credits REAL NOT NULL CHECK (num_credits IN (0.5, 1)),
     CONSTRAINT department FOREIGN KEY(department) REFERENCES department(code),
     CONSTRAINT breadth FOREIGN KEY(breadth_category) REFERENCES breadth_category(id),
-    CONSTRAINT unique_course UNIQUE (department, course_number, campus)
+    CONSTRAINT unique_course UNIQUE (department, course_number, campus, num_credits)
 );
 CREATE TABLE selection (
     id INT PRIMARY KEY,
