@@ -15,7 +15,7 @@ CREATE TABLE breadth_category (
 );
 
 CREATE TABLE course (
-    id INT PRIMARY KEY CHECK (id >= 0),
+    code VARCHAR(10) PRIMARY KEY,
     department CHAR(3) NOT NULL,
     course_title VARCHAR(150) NOT NULL,
     course_number SMALLINT NOT NULL CHECK (course_number >= 100),
@@ -30,15 +30,15 @@ CREATE TABLE course (
 );
 CREATE TABLE selection (
     id INT PRIMARY KEY,
-    course_id INT NOT NULL,
+    code VARCHAR(10) NOT NULL,
     section CHAR(1) NOT NULL CHECK (section IN ('F', 'S', 'Y')),
     start_year SMALLINT NOT NULL,
-    start_month SMALLINT CHECK (1 <= start_month AND start_month <= 12),
+    start_month SMALLINT NOT NULL CHECK (1 <= start_month AND start_month <= 12),
     num_weeks SMALLINT NOT NULL,
-    delivery_instructions VARCHAR(1000),
-    other_instructions VARCHAR(1000),
-    CONSTRAINT unique_selection UNIQUE (course_id, section, start_year, start_month),
-    CONSTRAINT course_id FOREIGN KEY(course_id) REFERENCES course(id)
+    delivery_instructions VARCHAR(1500),
+    other_instructions VARCHAR(1500),
+    CONSTRAINT unique_selection UNIQUE (code, start_year, start_month),
+    CONSTRAINT code FOREIGN KEY(code) REFERENCES course(code)
 );
 CREATE TABLE instructor (
     id INT PRIMARY KEY,
@@ -70,32 +70,32 @@ CREATE TABLE course_relation_tree (
     group_id INT NOT NULL,
     parent_id INT,
     is_optional BOOLEAN,
-    course_id INT,
+    code VARCHAR(10),
     edge_id INT,
-    CONSTRAINT course_id FOREIGN KEY(course_id) REFERENCES course(id),
+    CONSTRAINT code FOREIGN KEY(code) REFERENCES course(code),
     CONSTRAINT edge_id FOREIGN KEY(edge_id) REFERENCES course_relation_tree_edge(id)
 );
 CREATE TABLE prerequisite (
-    id INT PRIMARY KEY,
+    code VARCHAR(10) PRIMARY KEY,
     prereq INT NOT NULL,
     CONSTRAINT prereq FOREIGN KEY(prereq) REFERENCES course_relation_tree(id),
-    CONSTRAINT id FOREIGN KEY(id) REFERENCES course(id)
+    CONSTRAINT code FOREIGN KEY(code) REFERENCES course(code)
 );
 CREATE TABLE exclusion (
-    id INT PRIMARY KEY,
+    code VARCHAR(10) PRIMARY KEY,
     exclusion INT NOT NULL,
     CONSTRAINT exclusion FOREIGN KEY(exclusion) REFERENCES course_relation_tree(id),
-    CONSTRAINT id FOREIGN KEY(id) REFERENCES course(id)
+    CONSTRAINT code FOREIGN KEY(code) REFERENCES course(code)
 );
 CREATE TABLE corequisite (
-    id INT PRIMARY KEY,
+    code VARCHAR(10) PRIMARY KEY,
     coreq INT NOT NULL,
     CONSTRAINT coreq FOREIGN KEY(coreq) REFERENCES course_relation_tree(id),
-    CONSTRAINT id FOREIGN KEY(id) REFERENCES course(id)
+    CONSTRAINT code FOREIGN KEY(code) REFERENCES course(code)
 );
 CREATE TABLE recommended_prep (
-    id INT PRIMARY KEY,
+    code VARCHAR(10) PRIMARY KEY,
     prep INT NOT NULL,
     CONSTRAINT prep FOREIGN KEY(prep) REFERENCES course_relation_tree(id),
-    CONSTRAINT id FOREIGN KEY(id) REFERENCES course(id)
+    CONSTRAINT code FOREIGN KEY(code) REFERENCES course(code)
 );

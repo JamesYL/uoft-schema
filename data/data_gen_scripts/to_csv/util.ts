@@ -1,6 +1,8 @@
 import path from "path";
 import fs from "fs/promises";
+import { createReadStream } from "fs";
 import { createObjectCsvWriter } from "csv-writer";
+import csv from "csv-parser";
 import { Course } from "../parseRawData";
 
 export const getAllParsed = async (): Promise<Course[]> => {
@@ -28,4 +30,20 @@ export const saveToCsv = async <Record>(
   });
 
   return csvWriter.writeRecords(records);
+};
+export const readFromCsv = async <CSVType>(
+  pathToCsv: string
+): Promise<CSVType[]> => {
+  const res: CSVType[] = [];
+  createReadStream(pathToCsv)
+    .pipe(csv())
+    .on("data", (data) => res.push(data))
+    .on("end", () => {});
+
+  const stream = createReadStream(pathToCsv).pipe(csv());
+  return new Promise<CSVType[]>((resolve, reject) => {
+    stream.on("data", (data) => res.push(data));
+    stream.on("end", () => resolve(res));
+    stream.on("error", (err) => reject(err));
+  });
 };

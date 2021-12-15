@@ -1,18 +1,7 @@
 import { getAllParsed, saveToCsv } from "./util";
 
-type Header =
-  | "id"
-  | "department"
-  | "course_title"
-  | "course_number"
-  | "campus"
-  | "breadth_category"
-  | "distribution_category"
-  | "course_description"
-  | "num_credits";
-
-const headers: Header[] = [
-  "id",
+const header = [
+  "code",
   "department",
   "course_title",
   "course_number",
@@ -23,11 +12,8 @@ const headers: Header[] = [
   "num_credits",
 ];
 
-type BaseRecord = {
-  [key in Header]?: string | number;
-};
-interface Record extends BaseRecord {
-  id: number;
+export interface CourseCSV {
+  code: string;
   department: string;
   course_title: string;
   course_number: number;
@@ -42,7 +28,7 @@ const coursesToCsv = async () => {
   const courses = await getAllParsed();
   const codeExists = new Set();
   const coursesForCSV = courses
-    .map<Record>(
+    .map<CourseCSV>(
       ({
         courseTitle,
         code,
@@ -68,14 +54,14 @@ const coursesToCsv = async () => {
         }
 
         const res = {
-          id: -1,
+          code,
           department: code.slice(0, 3),
           course_title: courseTitle,
           course_number: courseNumber,
           campus: Number(code[code.length - 1]) as 1 | 3 | 5,
           num_credits: numCredits,
           course_description: courseDescription,
-        } as Record;
+        } as CourseCSV;
         if (distributionCategories) {
           res.distribution_category = distributionCategories;
         }
@@ -92,14 +78,12 @@ const coursesToCsv = async () => {
       }
     )
     .filter((item) => {
-      const id = `${item.department};${item.course_number};${item.num_credits};${item.campus}`;
-      if (codeExists.has(id)) return false;
-      codeExists.add(id);
+      if (codeExists.has(item.code)) return false;
+      codeExists.add(item.code);
       return true;
-    })
-    .map<Record>((item, i) => ({ ...item, id: i }));
+    });
 
-  await saveToCsv<Record>("course.csv", headers, coursesForCSV);
+  await saveToCsv<CourseCSV>("course.csv", header, coursesForCSV);
   console.log("Successfully saved courses to CSV");
 };
 export default coursesToCsv;
