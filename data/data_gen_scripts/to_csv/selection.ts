@@ -75,7 +75,7 @@ const selectionToCsv = async () => {
       return res;
     })
     .filter((item) => {
-      const id = `${item.code};${item.start_year};${item.start_month}`;
+      const id = `${item.code};${item.start_year};${item.start_month};${item.section}`;
       if (exists.has(id)) return false;
       exists.add(id);
       return true;

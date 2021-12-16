@@ -70,7 +70,9 @@ const parseRawData = async (rawCourses: CourseRawData): Promise<Course[]> => {
     Object.keys(rawCourse.meetings).forEach((meetingId) => {
       const meeting = rawCourse.meetings[meetingId];
       if (meeting.cancel) return;
-      const { teachingMethod, sectionNumber, deliveryMode } = meeting;
+      const { teachingMethod, sectionNumber } = meeting;
+      const deliveryMode =
+        meeting.deliveryMode === "INPER" ? "CLASS" : meeting.deliveryMode;
       const schedule: Schedule[] = [];
       const instructors: Instructor[] = [];
       Object.keys(meeting.instructors).forEach((instructorId) => {
@@ -84,10 +86,11 @@ const parseRawData = async (rawCourses: CourseRawData): Promise<Course[]> => {
           meeting.schedule as ScheduleRawData
         )[scheduleId];
         if (
-          meetingDay !== null
-          && meetingStartTime !== null
-          && meetingEndTime !== null
-        ) schedule.push({ meetingDay, meetingStartTime, meetingEndTime });
+          meetingDay !== null &&
+          meetingStartTime !== null &&
+          meetingEndTime !== null
+        )
+          schedule.push({ meetingDay, meetingStartTime, meetingEndTime });
       });
       meetings.push({
         schedule,
@@ -97,28 +100,28 @@ const parseRawData = async (rawCourses: CourseRawData): Promise<Course[]> => {
         deliveryMode,
         contactHours: meeting.contactHours,
       });
-      parsedCourses.push({
-        courseTitle,
-        code,
-        section,
-        session,
-        meetings,
-        breadthCategories,
-        distributionCategories,
-        deliveryInstructions: !deliveryInstructions
-          ? undefined
-          : deliveryInstructions,
-        courseDescription,
-        prerequisite: !prerequisite ? undefined : prerequisite,
-        corequisite: !corequisite ? undefined : corequisite,
-        exclusion: !exclusion ? undefined : exclusion,
-        recommendedPreparation: !recommendedPreparation
-          ? undefined
-          : recommendedPreparation,
-        webTimetableInstructions: !webTimetableInstructions
-          ? undefined
-          : webTimetableInstructions,
-      });
+    });
+    parsedCourses.push({
+      courseTitle,
+      code,
+      section,
+      session,
+      meetings,
+      breadthCategories,
+      distributionCategories,
+      deliveryInstructions: !deliveryInstructions
+        ? undefined
+        : deliveryInstructions,
+      courseDescription,
+      prerequisite: !prerequisite ? undefined : prerequisite,
+      corequisite: !corequisite ? undefined : corequisite,
+      exclusion: !exclusion ? undefined : exclusion,
+      recommendedPreparation: !recommendedPreparation
+        ? undefined
+        : recommendedPreparation,
+      webTimetableInstructions: !webTimetableInstructions
+        ? undefined
+        : webTimetableInstructions,
     });
   });
   return parsedCourses;

@@ -37,18 +37,13 @@ CREATE TABLE selection (
     num_weeks SMALLINT NOT NULL,
     delivery_instructions VARCHAR(1500),
     other_instructions VARCHAR(1500),
-    CONSTRAINT unique_selection UNIQUE (code, start_year, start_month),
+    CONSTRAINT unique_selection UNIQUE (code, start_year, start_month, section),
     CONSTRAINT code FOREIGN KEY(code) REFERENCES course(code)
-);
-CREATE TABLE instructor (
-    id INT PRIMARY KEY,
-    first_name VARCHAR(30) NOT NULL,
-    last_name VARCHAR(30) NOT NULL
 );
 CREATE TABLE meeting (
     id INT PRIMARY KEY,
     meeting_type CHAR(3) NOT NULL CHECK (meeting_type IN ('LEC', 'TUT', 'PRA')),
-    section_number SMALLINT NOT NULL CHECK (section_number >= 0),
+    section_number CHAR(4) NOT NULL,
     delivery_mode VARCHAR(8) NOT NULL CHECK (delivery_mode IN ('ONLSYNC', 'CLASS', 'ONLASYNC')),
     selection_id INT NOT NULL,
     CONSTRAINT selection_id FOREIGN KEY(selection_id) REFERENCES selection(id),
@@ -56,9 +51,9 @@ CREATE TABLE meeting (
 );
 CREATE TABLE meeting_taught_by (
     meeting_id INT,
-    instructor_id INT,
-    PRIMARY KEY (meeting_id, instructor_id),
-    CONSTRAINT instructor_id FOREIGN KEY(instructor_id) REFERENCES instructor(id),
+    first_name VARCHAR(30),
+    last_name VARCHAR(30),
+    PRIMARY KEY (meeting_id, first_name, last_name),
     CONSTRAINT meeting_id FOREIGN KEY(meeting_id) REFERENCES meeting(id)
 );
 CREATE TABLE course_relation_tree_edge (

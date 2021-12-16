@@ -21,7 +21,7 @@ export interface MeetingRawData {
   teachingMethod: "LEC" | "TUT" | "PRA";
   /** Something like 5101, 0102, 0102 */
   sectionNumber: string;
-  deliveryMode: "ONLSYNC" | "ONLASYNC" | "CLASS";
+  deliveryMode: "ONLSYNC" | "ONLASYNC" | "CLASS" | "INPER";
   /** Async only hours per week */
   contactHours?: string;
   /** If this meeting still exists */
@@ -54,11 +54,11 @@ export interface CourseRawData {
  */
 const getRawData = async (
   searchCode: string,
-  searchSession: string,
+  searchSession: string
 ): Promise<CourseRawData> => {
   const rawCourses = (
     await axios.get<CourseRawData | []>(
-      `https://timetable.iit.artsci.utoronto.ca/api/${searchSession}/courses?code=${searchCode}`,
+      `https://timetable.iit.artsci.utoronto.ca/api/${searchSession}/courses?code=${searchCode}`
     )
   ).data;
   if (Array.isArray(rawCourses)) return {};
