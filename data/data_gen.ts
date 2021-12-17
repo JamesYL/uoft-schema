@@ -4,10 +4,18 @@ import meetingToCsv from "./data_gen_scripts/to_csv/meeting";
 import selectionToCsv from "./data_gen_scripts/to_csv/selection";
 
 interface GenerateOptions {
-  /* Whether or not to refresh raw data and parsed data (before CSV), true means UofT API will be called and the raw/parsed data will get overridden */
-  fetchUpdatedData: boolean;
+  /** Generate raw data and parsed data returned by the UofT */
+  fetchUpdatedData?: {
+    /** Which timetable term to get, ex: 20205, 20219 */
+    latest: string;
+    /** Courses to get from UofT Timetable, ex: CSC, STA, MAT137. It can be specific or general. */
+    codes: string[];
+  };
+  /** Generate CSV files for courses */
   updateCourses: boolean;
+  /** Generate CSV files for offerings of a course */
   updateSelections: boolean;
+  /** Generate CSV files for lecture/tutorial/practical meetings */
   updateMeetings: boolean;
 }
 const generate = async ({
@@ -16,21 +24,24 @@ const generate = async ({
   updateSelections,
   updateMeetings,
 }: GenerateOptions) => {
-  const latest = "20219"; // Update this to whatever latest term
-  const codes = ["CSC", "MAT", "STA"]; // Update for more courses
-  if (fetchUpdatedData)
+  if (fetchUpdatedData) {
+    const { latest, codes } = fetchUpdatedData;
     await Promise.all(
       codes.map(async (code) => {
         const option: Option = { code, latest };
         return saveRaw(option).then((data) => saveParsed(data, option));
       })
     );
+  }
   if (updateCourses) await coursesToCsv();
   if (updateSelections) await selectionToCsv();
   if (updateMeetings) await meetingToCsv();
 };
 generate({
-  fetchUpdatedData: false,
+  fetchUpdatedData: {
+    latest: "20219",
+    codes: ["CSC", "MAT", "STA"],
+  },
   updateCourses: true,
   updateSelections: true,
   updateMeetings: true,

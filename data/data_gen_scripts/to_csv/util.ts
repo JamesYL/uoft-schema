@@ -7,7 +7,9 @@ import { Course } from "../parseRawData";
 
 export const getAllParsed = async (): Promise<Course[]> => {
   const dirPath = path.resolve(process.cwd(), "data", "parsed");
-  const names = await fs.readdir(dirPath);
+  const names = (await fs.readdir(dirPath)).filter((item) =>
+    item.toLowerCase().endsWith(".csv")
+  );
   const contents = names.map((fileName) =>
     fs.readFile(path.resolve(dirPath, fileName), "utf-8")
   );
