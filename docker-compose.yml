@@ -1,6 +1,7 @@
 version: "3.9"
 services:
   postgres:
+    container_name: uoft-postgres
     image: postgres:14.1
     restart: always
     environment:
@@ -9,4 +10,5 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      - ./data/csv:/home/uoft-data/csv
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql

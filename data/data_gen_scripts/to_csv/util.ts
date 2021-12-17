@@ -23,7 +23,7 @@ export const saveToCsv = async <Record>(
   if (filename.slice(filename.length - 4) !== ".csv") {
     throw new Error("Filename must end with .csv");
   }
-  const dirPath = path.resolve(process.cwd(), "data", "csv");
+  const dirPath = path.resolve(process.cwd(), "data", "tmp_csv");
   const csvWriter = createObjectCsvWriter({
     path: path.resolve(dirPath, filename),
     header: header.map((item) => ({ id: item, title: item })),

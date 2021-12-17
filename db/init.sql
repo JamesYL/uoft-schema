@@ -94,3 +94,10 @@ CREATE TABLE recommended_prep (
     CONSTRAINT prep FOREIGN KEY(prep) REFERENCES course_relation_tree(id),
     CONSTRAINT code FOREIGN KEY(code) REFERENCES course(code)
 );
+
+\COPY department FROM '/home/uoft-data/csv/department.csv' DELIMITER ',' CSV HEADER;
+\COPY breadth_category FROM '/home/uoft-data/csv/breadth_category.csv' DELIMITER ',' CSV HEADER;
+\COPY course FROM '/home/uoft-data/csv/course.csv' DELIMITER ',' CSV HEADER;
+\COPY selection FROM '/home/uoft-data/csv/selection.csv' DELIMITER ',' CSV HEADER;
+\COPY meeting FROM '/home/uoft-data/csv/meeting.csv' DELIMITER ',' CSV HEADER;
+\COPY meeting_taught_by FROM '/home/uoft-data/csv/meeting_taught_by.csv' DELIMITER ',' CSV HEADER;

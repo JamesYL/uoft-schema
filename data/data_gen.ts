@@ -4,6 +4,7 @@ import meetingToCsv from "./data_gen_scripts/to_csv/meeting";
 import selectionToCsv from "./data_gen_scripts/to_csv/selection";
 
 interface GenerateOptions {
+  /* Whether or not to refresh raw data and parsed data (before CSV), true means UofT API will be called and the raw/parsed data will get overridden */
   fetchUpdatedData: boolean;
   updateCourses: boolean;
   updateSelections: boolean;
@@ -29,7 +30,7 @@ const generate = async ({
   if (updateMeetings) await meetingToCsv();
 };
 generate({
-  fetchUpdatedData: true,
+  fetchUpdatedData: false,
   updateCourses: true,
   updateSelections: true,
   updateMeetings: true,
