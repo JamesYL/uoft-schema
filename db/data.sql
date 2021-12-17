@@ -6,3 +6,4 @@
 \COPY course FROM './data/csv/course.csv' DELIMITER ',' CSV HEADER;
 \COPY selection FROM './data/csv/selection.csv' DELIMITER ',' CSV HEADER;
 \COPY meeting FROM './data/csv/meeting.csv' DELIMITER ',' CSV HEADER;
+\COPY meeting_taught_by FROM './data/csv/meeting_taught_by.csv' DELIMITER ',' CSV HEADER;
