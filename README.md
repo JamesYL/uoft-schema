@@ -20,10 +20,8 @@ Not everything can be automated. The format is often not given nicely, and some 
 ## More Info
 
 CSV files under [./data/csv](./data/csv) are synced to initializing the database in the docker container.  
-The database needs to be re-initialized to get these updated values.
-
-1. `docker-compose down -v`
-2. `docker-compose up -d`
+The database needs to be re-initialized to get these updated values.  
+Run `npm run reset` to drop the database and remake every entry.
 
 To access the database:
 
