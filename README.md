@@ -17,7 +17,7 @@ A PostgreSQL database for describing relations for UofT. Includes scripts to cal
 `npm run datagen`
 
 - Anything related to the data is under [./data](./data). The includes scripts for parsing data gathered by UofT's API.
-- [./src/datagen.ts](./src/datagen.ts) is the entry file that gets called when this command gets ran. Subsequent script files are called through this file.
+- [./datagen/datagen.ts](./datagen/datagen.ts) is the entry file that gets called when this command gets ran. Subsequent script files are called through this file.
 
 `npm run start`
 
