@@ -9,7 +9,7 @@
     "reset": "docker exec -it uoft-postgres psql -U postgres -d uoft -f /docker-entrypoint-initdb.d/init.sql",
     "access": "docker exec -it uoft-postgres psql -U postgres -d uoft",
     "lint": "eslint . --ext .ts,.tsx",
-    "datagen-gui": "cd datagen-gui && npm start"
+    "datagen-gui": "npm start --workspace=datagen-gui"
   },
   "repository": {
     "type": "git",
