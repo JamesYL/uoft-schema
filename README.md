@@ -27,3 +27,7 @@ A PostgreSQL database for describing relations for UofT. Includes scripts to cal
 `npm run reset`
 
 - Recreates the database with all data taken from [./data/csv](./data/csv)
+
+`npm run lint`
+
+- Runs the linter
