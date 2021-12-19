@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "datagen": "ts-node ./data/data_gen.ts",
+    "reset": "docker exec -it uoft-postgres psql -U postgres -d uoft -f /docker-entrypoint-initdb.d/init.sql",
     "lint": "eslint ./**/*.ts"
   },
   "repository": {

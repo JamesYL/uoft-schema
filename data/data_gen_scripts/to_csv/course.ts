@@ -22,6 +22,9 @@ export interface CourseCSV {
   distribution_category?: string;
   course_description: string;
   num_credits: number;
+  prerequisite: string;
+  exclusion?: string;
+  recommended_prep?: string;
 }
 
 const coursesToCsv = async () => {
@@ -35,6 +38,9 @@ const coursesToCsv = async () => {
         breadthCategories,
         distributionCategories,
         courseDescription,
+        prerequisite,
+        exclusion,
+        recommendedPreparation,
       }) => {
         let numCredits = -1;
         let courseNumber = -1;
@@ -74,6 +80,10 @@ const coursesToCsv = async () => {
             );
           res.breadth_category = breadthNum;
         }
+        if (prerequisite) res.prerequisite = prerequisite;
+        if (exclusion) res.exclusion = exclusion;
+        if (recommendedPreparation)
+          res.recommended_prep = recommendedPreparation;
         return res;
       }
     )

@@ -38,11 +38,11 @@ const generate = async ({
   if (updateMeetings) await meetingToCsv();
 };
 generate({
-  fetchUpdatedData: {
-    latest: "20219",
-    codes: ["CSC", "MAT", "STA"],
-  },
+  // fetchUpdatedData: {
+  //   latest: "20219",
+  //   codes: ["CSC", "MAT", "STA"],
+  // },
   updateCourses: true,
-  updateSelections: true,
-  updateMeetings: true,
+  updateSelections: false,
+  updateMeetings: false,
 });

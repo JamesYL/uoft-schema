@@ -24,6 +24,9 @@ CREATE TABLE course (
     distribution_category VARCHAR(14) CHECK (distribution_category in ('Science', 'Social Science', 'Humanities')),
     course_description VARCHAR(2500) NOT NULL,
     num_credits REAL NOT NULL CHECK (num_credits IN (0.5, 1)),
+    prerequisite VARCHAR(1000),
+    exclusion VARCHAR(1000),
+    recommended_prep VARCHAR(1000),
     CONSTRAINT department FOREIGN KEY(department) REFERENCES department(code),
     CONSTRAINT breadth FOREIGN KEY(breadth_category) REFERENCES breadth_category(id),
     CONSTRAINT unique_course UNIQUE (department, course_number, campus, num_credits)
