@@ -4,9 +4,10 @@
   "description": "PostgreSQL database schemas for UofT",
   "main": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "docker": "docker-compose up -d",
     "datagen": "ts-node ./data/data_gen.ts",
     "reset": "docker exec -it uoft-postgres psql -U postgres -d uoft -f /docker-entrypoint-initdb.d/init.sql",
+    "access": "docker exec -it uoft-postgres psql -U postgres -d uoft",
     "lint": "eslint ./**/*.ts"
   },
   "repository": {

@@ -9,22 +9,21 @@ A PostgreSQL database for describing relations for UofT. Includes scripts to cal
 
 ## Getting Started
 
-Do `docker-compose up -d` to spin up the instance of PostgreSQL with the data automatically copied over.
+1. `npm install`
+2. `npm run docker`
 
-## Generating Data
+## Development
 
-Anything related to the data is under [./data](./data). The includes scripts for parsing data gathered by UofT's API. Use `npm run datagen` to run these scripts.  
-Look into [./data/data_gen.ts](./data/data_gen.ts) for more information on what actually happens.  
-Not everything can be automated. The format is often not given nicely, and some data needs to be manually parsed.
+`npm run datagen`
 
-## More Info
+- Anything related to the data is under [./data](./data). The includes scripts for parsing data gathered by UofT's API.
+- [./data/data_gen.ts](./data/data_gen.ts) is the entry file that gets called when this command gets ran. Subsequent script files are called through this file.
+- Not everything can be automated. Manual parsing of the data is still necessary.
 
-CSV files under [./data/csv](./data/csv) are synced to initializing the database in the docker container.  
-The database needs to be re-initialized to get these updated values.  
-Run `npm run reset` to drop the database and remake every entry.
+`npm run access`
 
-To access the database:
+- Interactive terminal for working with Postgres
 
-1. `docker exec -it uoft-postgres /bin/bash`
-2. `psql -U postgres`
-3. `\c uoft`
+`npm run reset`
+
+- Recreates the database with all data taken from [./data/csv](./data/csv)

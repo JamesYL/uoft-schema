@@ -10,6 +10,9 @@ const header = [
   "distribution_category",
   "course_description",
   "num_credits",
+  "prerequisite",
+  "exclusion",
+  "recommended_prep",
 ];
 
 export interface CourseCSV {
@@ -22,7 +25,7 @@ export interface CourseCSV {
   distribution_category?: string;
   course_description: string;
   num_credits: number;
-  prerequisite: string;
+  prerequisite?: string;
   exclusion?: string;
   recommended_prep?: string;
 }

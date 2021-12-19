@@ -43,6 +43,6 @@ generate({
   //   codes: ["CSC", "MAT", "STA"],
   // },
   updateCourses: true,
-  updateSelections: false,
-  updateMeetings: false,
+  updateSelections: true,
+  updateMeetings: true,
 });

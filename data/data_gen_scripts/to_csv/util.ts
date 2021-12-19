@@ -8,7 +8,7 @@ import { Course } from "../parseRawData";
 export const getAllParsed = async (): Promise<Course[]> => {
   const dirPath = path.resolve(process.cwd(), "data", "parsed");
   const names = (await fs.readdir(dirPath)).filter((item) =>
-    item.toLowerCase().endsWith(".csv")
+    item.toLowerCase().endsWith(".json")
   );
   const contents = names.map((fileName) =>
     fs.readFile(path.resolve(dirPath, fileName), "utf-8")
@@ -30,7 +30,6 @@ export const saveToCsv = async <Record>(
     path: path.resolve(dirPath, filename),
     header: header.map((item) => ({ id: item, title: item })),
   });
-
   return csvWriter.writeRecords(records);
 };
 export const readFromCsv = async <CSVType>(
