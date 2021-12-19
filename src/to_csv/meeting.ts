@@ -1,6 +1,6 @@
 import path from "path";
 import { SelectionCSV } from "./selection";
-import { getAllParsed, readFromCsv, saveToCsv } from "./util";
+import { getAllParsed, readFromCsv, saveToCsv } from "../general/util";
 
 const meetingHeader = [
   "id",

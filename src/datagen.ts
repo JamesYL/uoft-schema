@@ -1,7 +1,7 @@
-import { saveRaw, saveParsed, Option } from "./data_gen_scripts/cacheData";
-import coursesToCsv from "./data_gen_scripts/to_csv/course";
-import meetingToCsv from "./data_gen_scripts/to_csv/meeting";
-import selectionToCsv from "./data_gen_scripts/to_csv/selection";
+import { saveRaw, saveParsed, Option } from "./general/cacheData";
+import coursesToCsv from "./to_csv/course";
+import meetingToCsv from "./to_csv/meeting";
+import selectionToCsv from "./to_csv/selection";
 
 interface GenerateOptions {
   /** Generate raw data and parsed data returned by the UofT */
@@ -38,10 +38,10 @@ const generate = async ({
   if (updateMeetings) await meetingToCsv();
 };
 generate({
-  // fetchUpdatedData: {
-  //   latest: "20219",
-  //   codes: ["CSC", "MAT", "STA"],
-  // },
+  fetchUpdatedData: {
+    latest: "20219",
+    codes: ["CSC", "MAT", "STA"],
+  },
   updateCourses: true,
   updateSelections: true,
   updateMeetings: true,

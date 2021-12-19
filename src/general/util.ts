@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import { createReadStream } from "fs";
 import { createObjectCsvWriter } from "csv-writer";
 import csv from "csv-parser";
-import { Course } from "../parseRawData";
+import { Course } from "./parseRawData";
 
 export const getAllParsed = async (): Promise<Course[]> => {
   const dirPath = path.resolve(process.cwd(), "data", "parsed");

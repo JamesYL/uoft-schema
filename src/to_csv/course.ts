@@ -1,4 +1,4 @@
-import { getAllParsed, saveToCsv } from "./util";
+import { getAllParsed, saveToCsv } from "../general/util";
 
 const header = [
   "code",

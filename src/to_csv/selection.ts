@@ -1,6 +1,6 @@
 import path from "path";
 import { CourseCSV } from "./course";
-import { getAllParsed, readFromCsv, saveToCsv } from "./util";
+import { getAllParsed, readFromCsv, saveToCsv } from "../general/util";
 
 const header = [
   "id",
