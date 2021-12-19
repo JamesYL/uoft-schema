@@ -18,7 +18,10 @@ A PostgreSQL database for describing relations for UofT. Includes scripts to cal
 
 - Anything related to the data is under [./data](./data). The includes scripts for parsing data gathered by UofT's API.
 - [./data/data_gen.ts](./data/data_gen.ts) is the entry file that gets called when this command gets ran. Subsequent script files are called through this file.
-- Not everything can be automated. Manual parsing of the data is still necessary.
+
+`npm run start`
+
+- Some data needs to be manually parsed due to the complexity of the format. This command starts up a frontend that provides an easy way to parse the data.
 
 `npm run access`
 
