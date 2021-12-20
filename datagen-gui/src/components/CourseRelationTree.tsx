@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import * as d3 from "d3";
 export interface TreeNodeData {
   code: string;
@@ -17,42 +17,61 @@ interface OutputTreeLink extends d3.HierarchyLink<TreeNodeData> {
   target: OutputTreeNode;
 }
 const margin = { top: 50, right: 50, bottom: 50, left: 50 };
-const trueDim = [1000, 800];
+const dimForGraph = [1000, 800];
+const dimForInfo = [1000, 200];
 const innerDim: [number, number] = [
-  trueDim[0] - margin.left - margin.right,
-  trueDim[1] - margin.top - margin.bottom,
+  dimForGraph[0] - margin.left - margin.right,
+  dimForGraph[1] - margin.top - margin.bottom,
 ];
-const nodeRadius = 35;
-const arrowRadius = 6;
+const nodeRadius = 50;
+const arrowRadius = 20; // How close the arrowhead is to each node
+const setupSVG = (): [
+  d3.Selection<SVGGElement, unknown, HTMLElement, any>,
+  d3.Selection<SVGTextElement, unknown, HTMLElement, any>
+] => {
+  const graphSvg = d3.select("#course-graph");
+  const infoSvg = d3.select("#course-info");
+  graphSvg.selectAll("*").remove();
+  infoSvg.selectAll("*").remove();
+  const g = graphSvg
+    .attr("width", dimForGraph[0])
+    .attr("height", dimForGraph[1])
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  g.append("defs")
+    .append("marker")
+    .attr("id", "arrowhead")
+    .attr("markerWidth", "10")
+    .attr("markerHeight", "7")
+    .attr("refX", "0")
+    .attr("refY", "3.5")
+    .attr("orient", "auto")
+    .attr("viewBox", "0 0 10 10")
+    .append("polygon")
+    .attr("points", "0 0, 4 3.5, 0 7");
+
+  const edgeTooltip = infoSvg
+    .attr("width", dimForInfo[0])
+    .attr("height", dimForInfo[1])
+    .append("text")
+    .attr("id", "#edge-tooltip")
+    .attr("x", margin.left)
+    .attr("y", margin.top + 25)
+    .attr("font-size", 25)
+    .style("fill", "black");
+
+  return [g, edgeTooltip];
+};
+
 const CourseRelationTree = ({ tree }: { tree: TreeNode }) => {
+  const nodes = d3.tree().size(innerDim)(
+    d3.hierarchy(tree, (d) => d.children)
+  ) as d3.HierarchyNode<TreeNodeData>;
   useEffect(() => {
-    const svg = d3
-      .select("#course-graph")
-      .attr("width", trueDim[0])
-      .attr("height", trueDim[1])
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    svg
-      .append("defs")
-      .append("marker")
-      .attr("id", "arrowhead")
-      .attr("markerWidth", "10")
-      .attr("markerHeight", "7")
-      .attr("refX", "0")
-      .attr("refY", "3.5")
-      .attr("orient", "auto")
-      .attr("viewBox", "0 0 10 10")
-      .append("polygon")
-      .attr("points", "0 0, 4 3.5, 0 7");
+    const [g, edgeTooltip] = setupSVG();
 
-    const treemap = d3.tree().size(innerDim);
-
-    const nodes = treemap(
-      d3.hierarchy(tree, (d) => d.children)
-    ) as d3.HierarchyNode<TreeNodeData>;
-
-    svg
-      .selectAll("line")
+    // Make edges between nodes
+    g.selectAll("line")
       .data(
         nodes
           .descendants()
@@ -61,7 +80,10 @@ const CourseRelationTree = ({ tree }: { tree: TreeNode }) => {
       )
       .enter()
       .append("line")
-      .style("stroke", "#aaa")
+      .style("stroke", (d) => (d.target.data.optional ? "green" : "red"))
+      .style("stroke-dasharray", (d) =>
+        d.target.data.parentToThisMsg ? "0" : "10,10"
+      )
       .attr("x1", (d) => d.source.x)
       .attr("y1", (d) => d.source.y)
       .attr("x2", (d) => {
@@ -77,9 +99,21 @@ const CourseRelationTree = ({ tree }: { tree: TreeNode }) => {
         return d.source.y + (dy / h) * (h - nodeRadius - arrowRadius);
       })
       .attr("marker-end", "url(#arrowhead)")
-      .attr("stroke-width", 2);
-    svg
-      .selectAll("circle")
+      .attr("stroke-width", 7)
+      .on("mouseover", function (_, d) {
+        const msg = d.target.data.parentToThisMsg;
+        if (msg) {
+          d3.select(this).attr("stroke-width", 15);
+          edgeTooltip.attr("visibility", "visible").text(msg);
+        }
+      })
+      .on("mouseout", function () {
+        d3.select(this).attr("stroke-width", 7);
+        edgeTooltip.attr("visibility", "hidden");
+      });
+
+    // Make nodes
+    g.selectAll("circle")
       .data(nodes.descendants() as unknown as OutputTreeNode[])
       .enter()
       .append("circle")
@@ -88,8 +122,9 @@ const CourseRelationTree = ({ tree }: { tree: TreeNode }) => {
       .attr("cx", (d) => d.x)
       .attr("cy", (d) => d.y)
       .attr("id", (d) => d.data.code);
-    svg
-      .selectAll("text")
+
+    // Add text inside of nodes
+    g.selectAll("text")
       .data(nodes.descendants() as unknown as OutputTreeNode[])
       .enter()
       .append("text")
@@ -98,10 +133,11 @@ const CourseRelationTree = ({ tree }: { tree: TreeNode }) => {
       .attr("y", (d) => d.y)
       .attr("text-anchor", "middle")
       .attr("stroke", "#000");
-  }, [tree]);
+  }, [nodes]);
   return (
     <>
       <svg id="course-graph"></svg>
+      <svg id="course-info"></svg>
     </>
   );
 };
