@@ -5,14 +5,18 @@ const App = () => {
   const treeData = {
     code: "1",
     children: [
-      { code: "CSC369H1", optional: true },
+      {
+        code: "CSC369H1",
+        optional: true,
+        parentToThisMsg: "first",
+      },
       { code: "3" },
       { code: "4" },
-      { code: "4" },
+      { code: "4", parentToThisMsg: "" },
       {
         code: "5",
         parentToThisMsg:
-          "parent messagemessagemessagemes sagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessag emessagemessa gemessagemessagemessagemessagemessa gemessagemessagemessagem essagemessagemessage",
+          "This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.ourse must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.ourse must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.ourse must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.",
       },
     ],
   };
