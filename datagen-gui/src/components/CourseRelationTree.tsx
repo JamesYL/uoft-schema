@@ -17,14 +17,13 @@ interface OutputTreeLink extends d3.HierarchyLink<TreeNodeData> {
   target: OutputTreeNode;
 }
 const margin = { top: 50, right: 50, bottom: 400, left: 50 };
-const dimForGraph = [1000, 800];
-const innerDim: [number, number] = [
-  dimForGraph[0] - margin.left - margin.right,
-  dimForGraph[1] - margin.top - margin.bottom,
-];
+
 const nodeRadius = 50;
 const arrowRadius = 20; // How close the arrowhead is to each node
-const setupSVG = (): [
+const setupSVG = (
+  dimForGraph: [number, number],
+  innerDim: [number, number]
+): [
   d3.Selection<SVGGElement, unknown, HTMLElement, any>,
   d3.Selection<d3.BaseType, unknown, HTMLElement, any>
 ] => {
@@ -93,13 +92,26 @@ const setupSVG = (): [
   return [g, edgeToolTip];
 };
 
-const CourseRelationTree = ({ tree }: { tree: TreeNode }) => {
+const CourseRelationTree = ({
+  tree,
+  width,
+  height,
+}: {
+  tree: TreeNode;
+  width: number;
+  height: number;
+}) => {
+  const dimForGraph: [number, number] = [width, height];
+  const innerDim: [number, number] = [
+    dimForGraph[0] - margin.left - margin.right,
+    dimForGraph[1] - margin.top - margin.bottom,
+  ];
   const nodes = d3.tree().size(innerDim)(
     d3.hierarchy(tree, (d) => d.children)
   ) as d3.HierarchyNode<TreeNodeData>;
   const [hoveredEdge, setHoveredEdge] = useState<OutputTreeLink | null>(null);
   useEffect(() => {
-    const [g, edgeTooltip] = setupSVG();
+    const [g, edgeTooltip] = setupSVG(dimForGraph, innerDim);
 
     // Make edges between nodes
     g.selectAll("line")

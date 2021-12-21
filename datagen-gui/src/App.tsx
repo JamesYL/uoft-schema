@@ -22,7 +22,7 @@ const App = () => {
   };
   return (
     <div>
-      <CourseRelationTree tree={treeData} />
+      <CourseRelationTree tree={treeData} width={1500} height={1000} />
     </div>
   );
 };
