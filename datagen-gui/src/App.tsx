@@ -1,28 +1,16 @@
-import React from "react";
 import CourseRelationTree from "./components/CourseRelationTree";
+import generateRelation from "./util/generateRelation";
 
 const App = () => {
-  const treeData = {
-    code: "1",
-    children: [
-      {
-        code: "CSC369H1",
-        optional: true,
-        parentToThisMsg: "first",
-      },
-      { code: "3" },
-      { code: "4" },
-      { code: "4", parentToThisMsg: "" },
-      {
-        code: "5",
-        parentToThisMsg:
-          "This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.ourse must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.ourse must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.ourse must be done with at least 60%.This course must be done with at least 60%.This course must be done with at least 60%.",
-      },
-    ],
-  };
+  const prereq =
+    "CSCB09H3/ ESC190H1/ ECE244H1/(MAT157Y1 with a minimum mark of 67)/MAT235Y1/MAT237Y1/MAT257Y1/ MAT291H1/ MAT292H1\r\n";
   return (
     <div>
-      <CourseRelationTree tree={treeData} width={1500} height={1000} />
+      <CourseRelationTree
+        treeData={generateRelation(prereq)}
+        width={1000}
+        height={1000}
+      />
     </div>
   );
 };

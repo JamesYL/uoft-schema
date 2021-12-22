@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import * as d3 from "d3";
+import { select, Selection } from "d3-selection";
+import { hierarchy, tree } from "d3-hierarchy";
 export interface TreeNodeData {
   code: string;
   optional?: boolean;
@@ -16,37 +17,26 @@ interface OutputTreeLink extends d3.HierarchyLink<TreeNodeData> {
   source: OutputTreeNode;
   target: OutputTreeNode;
 }
-const margin = { top: 50, right: 50, bottom: 400, left: 50 };
 
-const nodeRadius = 50;
-const arrowRadius = 20; // How close the arrowhead is to each node
+const margin = { top: 50, right: 50, bottom: 400, left: 50 };
+const nodeRadius = 70;
+
 const setupSVG = (
   dimForGraph: [number, number],
   innerDim: [number, number]
 ): [
-  d3.Selection<SVGGElement, unknown, HTMLElement, any>,
-  d3.Selection<d3.BaseType, unknown, HTMLElement, any>
+  Selection<SVGGElement, unknown, HTMLElement, any>,
+  Selection<d3.BaseType, unknown, HTMLElement, any>
 ] => {
-  const graphSvg = d3.select("#course-graph");
+  const graphSvg = select("#course-graph");
   graphSvg.selectAll("*").remove();
   const g = graphSvg
     .attr("width", dimForGraph[0])
     .attr("height", dimForGraph[1])
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-  g.append("defs")
-    .append("marker")
-    .attr("id", "arrowhead")
-    .attr("markerWidth", "10")
-    .attr("markerHeight", "7")
-    .attr("refX", "0")
-    .attr("refY", "3.5")
-    .attr("orient", "auto")
-    .attr("viewBox", "0 0 10 10")
-    .append("polygon")
-    .attr("points", "0 0, 4 3.5, 0 7");
 
-  const textBoxCoords = [margin.left, innerDim[1] + nodeRadius * 3];
+  const textBoxCoords = [margin.left, innerDim[1] + 100];
   const helperText = graphSvg
     .append("text")
     .attr("id", "#edge-tooltip")
@@ -93,11 +83,11 @@ const setupSVG = (
 };
 
 const CourseRelationTree = ({
-  tree,
+  treeData,
   width,
   height,
 }: {
-  tree: TreeNode;
+  treeData: TreeNode;
   width: number;
   height: number;
 }) => {
@@ -106,51 +96,50 @@ const CourseRelationTree = ({
     dimForGraph[0] - margin.left - margin.right,
     dimForGraph[1] - margin.top - margin.bottom,
   ];
-  const nodes = d3.tree().size(innerDim)(
-    d3.hierarchy(tree, (d) => d.children)
-  ) as d3.HierarchyNode<TreeNodeData>;
+
+  const root = hierarchy(treeData);
+  tree().nodeSize([nodeRadius * 2, nodeRadius * 2])(root);
+
   const [hoveredEdge, setHoveredEdge] = useState<OutputTreeLink | null>(null);
   useEffect(() => {
     const [g, edgeTooltip] = setupSVG(dimForGraph, innerDim);
-
+    let minX = 0;
+    let minY = 0;
+    let data = root.descendants() as unknown as OutputTreeNode[];
+    data.forEach((item) => {
+      minX = Math.min(item.x, minX);
+      minY = Math.min(item.y, minY);
+    });
+    data = data.map((item) => {
+      item.x -= minX;
+      item.x -= minY;
+      return item;
+    });
     // Make edges between nodes
     g.selectAll("line")
       .data(
-        nodes
-          .descendants()
-          .map((node) => node.links())
-          .flat() as unknown as OutputTreeLink[]
+        data.map((node) => node.links()).flat() as unknown as OutputTreeLink[]
       )
       .enter()
       .append("line")
-      .style("stroke", (d) => (d.target.data.optional ? "green" : "red"))
+      .style("stroke", (d) => (d.target.data.optional ? "red" : "green"))
       .style("stroke-dasharray", (d) =>
         d.target.data.parentToThisMsg ? "0" : "10,10"
       )
       .attr("x1", (d) => d.source.x)
       .attr("y1", (d) => d.source.y)
-      .attr("x2", (d) => {
-        const dx = d.target.x - d.source.x;
-        const dy = d.target.y - d.source.y;
-        const h = Math.sqrt(dx ** 2 + dy ** 2);
-        return d.source.x + (dx / h) * (h - nodeRadius - arrowRadius);
-      })
-      .attr("y2", (d) => {
-        const dx = d.target.x - d.source.x;
-        const dy = d.target.y - d.source.y;
-        const h = Math.sqrt(dx ** 2 + dy ** 2);
-        return d.source.y + (dy / h) * (h - nodeRadius - arrowRadius);
-      })
+      .attr("x2", (d) => d.target.x)
+      .attr("y2", (d) => d.target.y)
       .attr(
         "id",
-        (d) => `#c${d.source.x}x${d.source.y}y${d.target.x}x${d.target.y}y`
+        (d) =>
+          `#c${~~d.source.x}x${~~d.source.y}y${~~d.target.x}x${~~d.target.y}y`
       )
-      .attr("marker-end", "url(#arrowhead)")
       .attr("stroke-width", 7)
       .on("mouseenter", function (_, d) {
         const msg = d.target.data.parentToThisMsg;
         if (!msg) return;
-        d3.select(this).attr("stroke-width", 15);
+        select(this).attr("stroke-width", 15);
         edgeTooltip.text(msg);
         if (hoveredEdge) {
           if (
@@ -160,27 +149,28 @@ const CourseRelationTree = ({
             hoveredEdge.target.y === d.target.y
           )
             return;
-          const id = `#c${hoveredEdge.source.x}x${hoveredEdge.source.y}y${hoveredEdge.target.x}x${hoveredEdge.target.y}y`;
-          d3.select(id).attr("stroke-width", 7);
+          const id = `#c${~~hoveredEdge.source.x}x${~~hoveredEdge.source
+            .y}y${~~hoveredEdge.target.x}x${~~hoveredEdge.target.y}y`;
+          select(id).attr("stroke-width", 7);
         }
         setHoveredEdge(d);
       });
 
     // Make nodes
     g.selectAll("circle")
-      .data(nodes.descendants() as unknown as OutputTreeNode[])
+      .data(data)
       .enter()
       .append("circle")
-      .attr("r", nodeRadius)
       .style("fill", "lightgray")
       .style("stroke", "black")
+      .attr("r", nodeRadius - 20)
       .attr("cx", (d) => d.x)
       .attr("cy", (d) => d.y)
       .attr("id", (d) => d.data.code);
 
     // Add text inside of nodes
     g.selectAll("text")
-      .data(nodes.descendants() as unknown as OutputTreeNode[])
+      .data(data)
       .enter()
       .append("text")
       .text((d) => d.data.code)
@@ -189,7 +179,7 @@ const CourseRelationTree = ({
       .attr("text-anchor", "middle")
       .attr("stroke", "#000");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nodes]);
+  }, [root]);
   return <svg id="course-graph"></svg>;
 };
 
