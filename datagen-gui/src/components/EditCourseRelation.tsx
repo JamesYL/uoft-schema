@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import {
   Button,
   Checkbox,
@@ -6,34 +7,22 @@ import {
   Typography,
 } from "@mui/material";
 import generateRelation from "../util/generateRelation";
-import { TreeNode, TreeNodeData } from "./CourseRelationTree";
+import { TreeNode } from "./CourseRelationTree";
 export interface EditCourseRelationProps {
   relation: string;
   setRelation: (relation: string) => unknown;
-  setTreeData: (data: TreeNodeData) => unknown;
-  setCSVData: (data: string[]) => unknown;
+  setTreeData: (data: TreeNode[]) => unknown;
 }
 const EditCourseRelation = ({
   relation,
   setRelation,
   setTreeData,
-  setCSVData,
 }: EditCourseRelationProps) => {
   const treeData = generateRelation(relation);
-  const flattened: {
-    code: string;
-    optional?: boolean;
-    parentToThisMsg?: string;
-  }[] = [];
-  const items = [treeData];
-  while (items.length) {
-    const { code, optional, parentToThisMsg, children } =
-      items.pop() as TreeNode;
-    if (code) flattened.push({ code, optional, parentToThisMsg });
-    children?.forEach((item) => items.push(item));
-  }
-  console.log(flattened);
-
+  useEffect(() => {
+    setTreeData(treeData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <TextField
@@ -42,8 +31,7 @@ const EditCourseRelation = ({
         fullWidth
         label="Course Relation"
       />
-      {flattened.map(({ code, optional, parentToThisMsg }) => {
-        console.log(treeData);
+      {treeData.map(({ code, optional, parentToThisMsg }) => {
         return (
           <span>
             <Typography>Course Code: {code} </Typography>
@@ -51,10 +39,18 @@ const EditCourseRelation = ({
               control={<Checkbox checked={optional} />}
               label="Optional?"
             />
+            <TextField value={parentToThisMsg} />
           </span>
         );
       })}
-      <Button variant="outlined">Save</Button>
+      <Button
+        variant="outlined"
+        onClick={() => {
+          setTreeData(treeData);
+        }}
+      >
+        Save
+      </Button>
     </>
   );
 };

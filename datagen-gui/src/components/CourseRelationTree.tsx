@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { select, Selection } from "d3-selection";
-import { hierarchy, tree } from "d3-hierarchy";
+import { tree, stratify } from "d3-hierarchy";
 import { zoom } from "d3-zoom";
+
 export interface TreeNodeData {
-  code: string;
+  code?: string;
   optional?: boolean;
   parentToThisMsg?: string;
 }
 export interface TreeNode extends TreeNodeData {
-  children?: TreeNode[];
+  id: number;
+  parentId?: number;
 }
 interface OutputTreeNode extends d3.HierarchyNode<TreeNodeData> {
   x: number;
@@ -23,7 +25,11 @@ const margin = { top: 50, right: 50, bottom: 400, left: 50 };
 const emptyNodeRadius = 20;
 /** Width, height */
 const nonEmptyNodeSize: [number, number] = [100, 30];
-
+const dimForGraph: [number, number] = [1000, 1000];
+const innerDim: [number, number] = [
+  dimForGraph[0] - margin.left - margin.right,
+  dimForGraph[1] - margin.top - margin.bottom,
+];
 const setupSVG = (
   dimForGraph: [number, number],
   innerDim: [number, number]
@@ -91,26 +97,16 @@ const setupSVG = (
   return [g, edgeToolTip];
 };
 
-const CourseRelationTree = ({
-  treeData,
-  width,
-  height,
-}: {
-  treeData: TreeNode;
-  width: number;
-  height: number;
-}) => {
-  const dimForGraph: [number, number] = [width, height];
-  const innerDim: [number, number] = [
-    dimForGraph[0] - margin.left - margin.right,
-    dimForGraph[1] - margin.top - margin.bottom,
-  ];
-
-  const root = hierarchy(treeData);
-  tree().nodeSize([emptyNodeRadius * 7, emptyNodeRadius * 5])(root);
-
+const CourseRelationTree = ({ treeData }: { treeData: TreeNode[] }) => {
   const [hoveredEdge, setHoveredEdge] = useState<OutputTreeLink | null>(null);
+
   useEffect(() => {
+    let root = stratify()([{ id: 0 }]);
+
+    if (treeData.length) {
+      root = stratify()(treeData);
+    }
+    tree().nodeSize([emptyNodeRadius * 7, emptyNodeRadius * 5])(root);
     const [g, edgeTooltip] = setupSVG(dimForGraph, innerDim);
     let minX = 0;
     let minY = 0;
@@ -177,7 +173,7 @@ const CourseRelationTree = ({
       .attr("height", nonEmptyNodeSize[1])
       .attr("x", (d) => d.x - emptyNodeRadius * 2.5)
       .attr("y", (d) => d.y)
-      .attr("id", (d) => d.data.code);
+      .attr("id", (d) => d.id as string);
 
     // Make nodes for empty nodes
     g.selectAll("circle")
@@ -189,21 +185,21 @@ const CourseRelationTree = ({
       .style("stroke", "black")
       .attr("r", emptyNodeRadius)
       .attr("cx", (d) => d.x)
-      .attr("cy", (d) => d.y);
+      .attr("cy", (d) => d.y)
+      .text((d) => d.id as string);
 
     // Add text inside of nodes
     g.selectAll("text")
       .data(data)
       .enter()
       .append("text")
-      .text((d) => d.data.code)
+      .text((d) => d.data.code ?? "")
       .attr("x", (d) => d.x)
       .attr("y", (d) => d.y + emptyNodeRadius)
       .attr("text-anchor", "middle")
       .attr("stroke", "#000");
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [root]);
+  }, [treeData]);
   return <svg id="course-graph"></svg>;
 };
 
