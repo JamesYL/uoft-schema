@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Button,
   Checkbox,
@@ -21,20 +21,13 @@ export interface EditCourseRelationProps {
 }
 const CourseRelationNode = ({
   node,
+  handleChange,
   index,
-  setNodes,
 }: {
   node: TreeNode;
+  handleChange: (node: TreeNode, index: number) => unknown;
   index: number;
-  setNodes: React.Dispatch<React.SetStateAction<TreeNode[]>>;
 }) => {
-  const handleChange = (node: TreeNode) => {
-    setNodes((nodes) => {
-      const allCpy = [...nodes];
-      allCpy[index] = node;
-      return allCpy;
-    });
-  };
   const { id, parentId, optional, parentToThisMsg, code } = node;
   return (
     <TableRow>
@@ -47,7 +40,9 @@ const CourseRelationNode = ({
       <TableCell>
         <TextField
           value={code}
-          onChange={(e) => handleChange({ ...node, code: e.target.value })}
+          onChange={(e) =>
+            handleChange({ ...node, code: e.target.value }, index)
+          }
         />
       </TableCell>
       <TableCell>
@@ -60,7 +55,7 @@ const CourseRelationNode = ({
         <TextField
           value={parentToThisMsg}
           onChange={(e) =>
-            handleChange({ ...node, parentToThisMsg: e.target.value })
+            handleChange({ ...node, parentToThisMsg: e.target.value }, index)
           }
         />
       </TableCell>
@@ -76,6 +71,16 @@ const EditCourseRelation = ({
 }: EditCourseRelationProps) => {
   const [localTreeData, setLocalTreeData] = useState<TreeNode[]>(
     useMemo(() => generateRelation(relation), [relation])
+  );
+  const handleChange = useCallback(
+    (node: TreeNode, index: number) => {
+      setLocalTreeData((state) => {
+        const cpy = [...state];
+        cpy[index] = node;
+        return cpy;
+      });
+    },
+    [setLocalTreeData]
   );
 
   useEffect(() => {
@@ -108,7 +113,7 @@ const EditCourseRelation = ({
                 key={node.id}
                 node={node}
                 index={i}
-                setNodes={setLocalTreeData}
+                handleChange={handleChange}
               />
             ))}
           </TableBody>
