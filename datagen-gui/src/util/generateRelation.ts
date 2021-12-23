@@ -4,7 +4,7 @@ const generateRelation = (relation: string): TreeNode[] => {
   relation = relation.trim();
   let id = 1;
   const res: TreeNode[] = [];
-  const splitComma = (relation: string, parent: number) => {
+  const splitComma = (relation: string, parent: string) => {
     const split = relation
       .split(",")
       .map((item) => item.trim())
@@ -14,7 +14,7 @@ const generateRelation = (relation: string): TreeNode[] => {
     let currId = id;
     const node: TreeNode = {
       parentId: parent,
-      id: id++,
+      id: `${id++}`,
       optional: true,
     };
     res.push(node);
@@ -22,10 +22,15 @@ const generateRelation = (relation: string): TreeNode[] => {
       node.code = split[0];
     } else
       split.forEach((item) =>
-        res.push({ code: item, parentId: currId, id: ++id, optional: false })
+        res.push({
+          code: item,
+          parentId: `${currId}`,
+          id: `${id++}`,
+          optional: false,
+        })
       );
   };
-  const splitSlash = (relation: string, parent?: number) => {
+  const splitSlash = (relation: string, parent?: string) => {
     const split = relation
       .split("/")
       .map((item) => item.trim())
@@ -36,13 +41,13 @@ const generateRelation = (relation: string): TreeNode[] => {
 
     const node: TreeNode = {
       parentId: parent,
-      id: id++,
+      id: `${id++}`,
     };
     res.push(node);
     if (split.length === 1) {
-      if (/,/.test(split[0])) splitComma(split[0], currId);
+      if (/,/.test(split[0])) splitComma(split[0], `${currId}`);
       else node.code = split[0];
-    } else split.forEach((item) => splitComma(item, currId));
+    } else split.forEach((item) => splitComma(item, `${currId}`));
   };
   const splitSemi = (relation: string) => {
     const split = relation
@@ -53,7 +58,7 @@ const generateRelation = (relation: string): TreeNode[] => {
 
     const parent = id;
     const node: TreeNode = {
-      id: id++,
+      id: `${id++}`,
     };
     res.push(node);
     if (split.length === 1) {
@@ -67,8 +72,8 @@ const generateRelation = (relation: string): TreeNode[] => {
           .filter((item) => item.length > 0)
           .forEach((item) => {
             res.push({
-              parentId: parent,
-              id: id++,
+              parentId: `${parent}`,
+              id: `${id++}`,
               code: item,
               optional: true,
             });
@@ -78,7 +83,7 @@ const generateRelation = (relation: string): TreeNode[] => {
       }
     } else {
       split.forEach((item) => {
-        splitSlash(item, parent);
+        splitSlash(item, `${parent}`);
       });
     }
   };

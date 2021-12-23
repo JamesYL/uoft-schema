@@ -9,8 +9,8 @@ export interface TreeNodeData {
   parentToThisMsg?: string;
 }
 export interface TreeNode extends TreeNodeData {
-  id: number;
-  parentId?: number;
+  id: string;
+  parentId?: string;
 }
 interface OutputTreeNode extends d3.HierarchyNode<TreeNodeData> {
   x: number;
@@ -101,7 +101,7 @@ const CourseRelationTree = ({ treeData }: { treeData: TreeNode[] }) => {
   const [hoveredEdge, setHoveredEdge] = useState<OutputTreeLink | null>(null);
 
   useEffect(() => {
-    let root = stratify()([{ id: 0 }]);
+    let root = stratify()([{ id: "0" }]);
 
     if (treeData.length) {
       root = stratify()(treeData);
