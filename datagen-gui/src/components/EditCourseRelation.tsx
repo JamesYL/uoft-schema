@@ -39,11 +39,17 @@ const CourseRelationNode = ({
         <Typography>{id}</Typography>
       </TableCell>
       <TableCell>
-        <TextField value={parentId} type="number" />
+        <TextField
+          value={parentId ?? ""}
+          type="number"
+          onChange={(e) =>
+            handleChange({ ...node, parentId: e.target.value }, index)
+          }
+        />
       </TableCell>
       <TableCell>
         <TextField
-          value={code}
+          value={code ?? ""}
           onChange={(e) =>
             handleChange({ ...node, code: e.target.value }, index)
           }
@@ -57,7 +63,7 @@ const CourseRelationNode = ({
       </TableCell>
       <TableCell>
         <TextField
-          value={parentToThisMsg}
+          value={parentToThisMsg ?? ""}
           onChange={(e) =>
             handleChange({ ...node, parentToThisMsg: e.target.value }, index)
           }

@@ -181,21 +181,21 @@ const CourseRelationTree = ({ treeData }: { treeData: TreeNode[] }) => {
       .enter()
       .filter((d) => !d.data.code)
       .append("circle")
-      .style("fill", "gray")
+      .style("fill", "#F3F6FB")
       .style("stroke", "black")
       .attr("r", emptyNodeRadius)
       .attr("cx", (d) => d.x)
       .attr("cy", (d) => d.y)
-      .text((d) => d.id as string);
+      .attr("id", (d) => d.id as string);
 
     // Add text inside of nodes
     g.selectAll("text")
       .data(data)
       .enter()
       .append("text")
-      .text((d) => d.data.code ?? "")
+      .text((d) => d.data.code ?? (d.id as string))
       .attr("x", (d) => d.x)
-      .attr("y", (d) => d.y + emptyNodeRadius)
+      .attr("y", (d) => (d.data.code ? d.y + emptyNodeRadius : d.y + 5))
       .attr("text-anchor", "middle")
       .attr("stroke", "#000");
     // eslint-disable-next-line react-hooks/exhaustive-deps
