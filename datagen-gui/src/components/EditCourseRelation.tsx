@@ -11,9 +11,11 @@ import {
   TableCell,
   TableBody,
   Typography,
+  IconButton,
 } from "@mui/material";
 import generateRelation from "../util/generateRelation";
 import { TreeNode } from "./CourseRelationTree";
+import DeleteIcon from "@mui/icons-material/Delete";
 export interface EditCourseRelationProps {
   relation: string;
   setRelation: (relation: string) => unknown;
@@ -22,10 +24,12 @@ export interface EditCourseRelationProps {
 const CourseRelationNode = ({
   node,
   handleChange,
+  handleDelete,
   index,
 }: {
   node: TreeNode;
   handleChange: (node: TreeNode, index: number) => unknown;
+  handleDelete: (index: number) => unknown;
   index: number;
 }) => {
   const { id, parentId, optional, parentToThisMsg, code } = node;
@@ -47,8 +51,8 @@ const CourseRelationNode = ({
       </TableCell>
       <TableCell>
         <Checkbox
-          checked={optional}
-          // onChange={(e) => onChange({ ...node, optional: e.target.value })}
+          checked={!!optional}
+          onChange={() => handleChange({ ...node, optional: !optional }, index)}
         />
       </TableCell>
       <TableCell>
@@ -58,6 +62,11 @@ const CourseRelationNode = ({
             handleChange({ ...node, parentToThisMsg: e.target.value }, index)
           }
         />
+      </TableCell>
+      <TableCell>
+        <IconButton onClick={() => handleDelete(index)}>
+          <DeleteIcon fontSize="large" />
+        </IconButton>
       </TableCell>
     </TableRow>
   );
@@ -79,6 +88,12 @@ const EditCourseRelation = ({
         cpy[index] = node;
         return cpy;
       });
+    },
+    [setLocalTreeData]
+  );
+  const handleDelete = useCallback(
+    (index: number) => {
+      setLocalTreeData((state) => state.filter((_, i) => i !== index));
     },
     [setLocalTreeData]
   );
@@ -105,6 +120,7 @@ const EditCourseRelation = ({
               <TableCell>Course Code</TableCell>
               <TableCell>Optional?</TableCell>
               <TableCell>Extra Info</TableCell>
+              <TableCell>Delete</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -114,6 +130,7 @@ const EditCourseRelation = ({
                 node={node}
                 index={i}
                 handleChange={handleChange}
+                handleDelete={handleDelete}
               />
             ))}
           </TableBody>
