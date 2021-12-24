@@ -23,6 +23,7 @@ A PostgreSQL database for describing relations for UofT. Includes scripts to cal
 `npm run gui`
 
 - Some data needs to be manually parsed due to the complexity of the format. This command starts up a frontend that provides an easy way to parse the data.
+- Specifically, the relationship between courses (prereqs, exclusion, coreqs, recommended prep) can be represented with a tree data structure. The frontend helps generate the necessary CSV file.
 
 `npm run access`
 
