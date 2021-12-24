@@ -101,8 +101,7 @@ const CourseRelationTree = ({ treeData }: { treeData: TreeNode[] }) => {
   const [hoveredEdge, setHoveredEdge] = useState<OutputTreeLink | null>(null);
 
   useEffect(() => {
-    let root = stratify()([{ id: "0" }]);
-
+    let root = stratify()([{ id: "-1" }]);
     if (treeData.length) {
       root = stratify()(treeData);
     }

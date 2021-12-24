@@ -16,10 +16,11 @@ import {
 import generateRelation from "../util/generateRelation";
 import { TreeNode } from "./CourseRelationTree";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { stratify } from "d3";
 export interface EditCourseRelationProps {
   relation: string;
-  setRelation: (relation: string) => unknown;
   setTreeData: (data: TreeNode[]) => unknown;
+  setRelation: (relation: string) => unknown;
 }
 const CourseRelationNode = ({
   node,
@@ -40,19 +41,23 @@ const CourseRelationNode = ({
       </TableCell>
       <TableCell>
         <TextField
+          variant="standard"
           value={parentId ?? ""}
           type="number"
           onChange={(e) =>
             handleChange({ ...node, parentId: e.target.value }, index)
           }
+          style={{ width: 40 }}
         />
       </TableCell>
       <TableCell>
         <TextField
+          variant="standard"
           value={code ?? ""}
           onChange={(e) =>
             handleChange({ ...node, code: e.target.value }, index)
           }
+          style={{ width: 110 }}
         />
       </TableCell>
       <TableCell>
@@ -63,10 +68,12 @@ const CourseRelationNode = ({
       </TableCell>
       <TableCell>
         <TextField
+          variant="standard"
           value={parentToThisMsg ?? ""}
           onChange={(e) =>
             handleChange({ ...node, parentToThisMsg: e.target.value }, index)
           }
+          style={{ width: 150 }}
         />
       </TableCell>
       <TableCell>
@@ -81,8 +88,8 @@ const MDisplayNode = React.memo(CourseRelationNode);
 
 const EditCourseRelation = ({
   relation,
-  setRelation,
   setTreeData,
+  setRelation,
 }: EditCourseRelationProps) => {
   const [localTreeData, setLocalTreeData] = useState<TreeNode[]>(
     useMemo(() => generateRelation(relation), [relation])
@@ -103,6 +110,24 @@ const EditCourseRelation = ({
     },
     [setLocalTreeData]
   );
+  const handleAdd = useCallback(() => {
+    setLocalTreeData((state) => {
+      const ids = new Set(state.map((item) => item.id));
+      let id = state.length;
+      while (ids.has(`${id}`)) {
+        id++;
+      }
+      return [...state, { id: `${id}` }];
+    });
+  }, [setLocalTreeData]);
+  const handleSave = () => {
+    try {
+      stratify()(localTreeData);
+      setTreeData(localTreeData);
+    } catch (err) {
+      alert("Invalid nodes, they don't form a tree");
+    }
+  };
 
   useEffect(() => {
     setTreeData(localTreeData);
@@ -110,15 +135,25 @@ const EditCourseRelation = ({
   }, []);
 
   return (
-    <>
+    <div style={{ width: 650 }}>
       <TextField
         defaultValue={relation}
-        disabled
         fullWidth
         label="Course Relation"
+        onChange={(e) => setRelation(e.target.value)}
       />
-      <TableContainer component={Paper}>
-        <Table>
+      <Button
+        variant="outlined"
+        style={{ marginBottom: 10 }}
+        onClick={() => {
+          const nodes = generateRelation(relation);
+          setLocalTreeData(nodes);
+        }}
+      >
+        Generate Nodes From Relation String
+      </Button>
+      <TableContainer component={Paper} style={{ marginBottom: 10 }}>
+        <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
@@ -142,8 +177,17 @@ const EditCourseRelation = ({
           </TableBody>
         </Table>
       </TableContainer>
-      <Button variant="outlined">Save</Button>
-    </>
+      <Button
+        variant="outlined"
+        onClick={handleAdd}
+        style={{ marginRight: 10 }}
+      >
+        Add Node
+      </Button>
+      <Button variant="outlined" onClick={handleSave}>
+        Save
+      </Button>
+    </div>
   );
 };
 export default EditCourseRelation;
